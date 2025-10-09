@@ -32,12 +32,11 @@ export async function getEmployee(id) {
   // TODO
   const sql = `
   SELECT * FROM employees 
-  WHERE id = $1 
-  RETURNING *
+  WHERE id = $1
   `;
 
   const { rows: employees } = await db.query(sql, [id]);
-  return employees;
+  return employees[0];
 }
 
 /**

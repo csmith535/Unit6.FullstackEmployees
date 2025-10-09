@@ -12,7 +12,7 @@ import {
 } from "#db/queries/employees";
 
 router.route("/").get(async (req, res) => {
-  res.send("Welcome to the Fullstack Employees API");
+  res.send("Welcome to the Fullstack Employees API.");
 });
 
 router
@@ -85,6 +85,36 @@ router
         res.status(404).send({ error: "Employee does not exist" });
       }
       res.status(204);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  })
+  .put(async (req, res) => {
+    const { id } = req.params;
+
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send({ error: "ID must be a positive integer" });
+    }
+
+    const { name, birthday, salary } = req.body;
+
+    if (!req.body) {
+      res.status(400).send({ error: "Body is required" });
+    }
+
+    if (!name) {
+      return res.status(400).send({ error: "Name is required" });
+    }
+    if (!birthday) {
+      return res.status(400).send({ error: "Birthday is required" });
+    }
+    if (!salary) {
+      return res.status(400).send({ error: "Salary is required" });
+    }
+
+    try {
+      const response = await updateEmployee({ id, name, birthday, salary });
+      res.status(200).send(response);
     } catch (error) {
       res.status(500).send(error);
     }
