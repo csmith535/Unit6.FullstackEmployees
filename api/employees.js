@@ -65,7 +65,7 @@ router
     try {
       const response = await getEmployee(id);
       if (!response) {
-        res.status(404).send({ error: "Employee does not exist" });
+        return res.status(404).send({ error: "Employee does not exist" });
       }
       res.status(200).send(response);
     } catch (error) {
@@ -82,9 +82,9 @@ router
     try {
       const response = await deleteEmployee(id);
       if (!response) {
-        res.status(404).send({ error: "Employee does not exist" });
+        return res.status(404).send({ error: "Employee does not exist" });
       }
-      res.status(204);
+      res.status(204).send();
     } catch (error) {
       res.status(500).send(error);
     }
@@ -96,11 +96,11 @@ router
       return res.status(400).send({ error: "ID must be a positive integer" });
     }
 
-    const { name, birthday, salary } = req.body;
-
     if (!req.body) {
-      res.status(400).send({ error: "Body is required" });
+      return res.status(400).send({ error: "Body is required" });
     }
+
+    const { name, birthday, salary } = req.body;
 
     if (!name) {
       return res.status(400).send({ error: "Name is required" });
@@ -114,6 +114,9 @@ router
 
     try {
       const response = await updateEmployee({ id, name, birthday, salary });
+      if (!response) {
+        return res.status(404).send({ error: "Employee does not exist" });
+      }
       res.status(200).send(response);
     } catch (error) {
       res.status(500).send(error);

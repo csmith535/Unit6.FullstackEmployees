@@ -53,7 +53,7 @@ export async function updateEmployee({ id, name, birthday, salary }) {
   `;
 
   const { rows: employees } = await db.query(sql, [id, name, birthday, salary]);
-  return employees;
+  return employees[0];
 }
 
 /**
@@ -65,6 +65,8 @@ export async function deleteEmployee(id) {
   const sql = `
   DELETE FROM employees
   WHERE id=$1
+  RETURNING *
   `;
-  const response = await db.query(sql, [id]);
+  const { rows: employees } = await db.query(sql, [id]);
+  return employees[0];
 }
