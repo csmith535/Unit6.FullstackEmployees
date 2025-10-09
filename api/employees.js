@@ -50,20 +50,42 @@ router
     }
   });
 
-router.route("/employees/:id").get(async (req, res) => {
-  const { id } = req.params;
+router
+  .route("/employees/:id")
+  .get(async (req, res) => {
+    const { id } = req.params;
 
-  // Check if ID is a positive integer (only digits allowed)
-  // a REGEX - checking for only digits start to end
-  // negative sign (-), decimal (.), letters (abc) will all error
-  if (!/^\d+$/.test(id)) {
-    return res.status(400).send({ error: "ID must be a positive integer" });
-  }
+    // Check if ID is a positive integer (only digits allowed)
+    // a REGEX - checking for only digits start to end
+    // negative sign (-), decimal (.), letters (abc) will all error
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send({ error: "ID must be a positive integer" });
+    }
 
-  try {
-    const response = await getEmployee(id);
-    res.status(200).send(response);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+    try {
+      const response = await getEmployee(id);
+      if (!response) {
+        res.status(404).send({ error: "Employee does not exist" });
+      }
+      res.status(200).send(response);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  })
+  .delete(async (req, res) => {
+    const { id } = req.params;
+
+    if (!/^\d+$/.test(id)) {
+      return res.status(400).send({ error: "ID must be a positive integer" });
+    }
+
+    try {
+      const response = await deleteEmployee(id);
+      if (!response) {
+        res.status(404).send({ error: "Employee does not exist" });
+      }
+      res.status(204);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  });
