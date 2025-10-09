@@ -3,9 +3,11 @@ import db from "#db/client";
 /** @returns the employee created according to the provided details */
 export async function createEmployee({ name, birthday, salary }) {
   // TODO
-  const text = `INSERT INTO 
-    employees(name, birthday, salary) 
-    VALUES($1, $2, $3) RETURNING *`;
+  const text = `
+  INSERT INTO employees(name, birthday, salary) 
+  VALUES($1, $2, $3) 
+  RETURNING *
+  `;
   const values = [name, birthday, salary];
 
   const { rows } = await db.query(text, values);
@@ -28,7 +30,14 @@ export async function getEmployees() {
  */
 export async function getEmployee(id) {
   // TODO
-  const sql = `SELECT * FROM employees WHERE id = ${id}`;
+  const sql = `
+  SELECT * FROM employees 
+  WHERE id = $1 
+  RETURNING *
+  `;
+
+  const { rows: employees } = await db.query(sql, [id]);
+  return employees;
 }
 
 /**
@@ -39,9 +48,13 @@ export async function updateEmployee({ id, name, birthday, salary }) {
   // TODO
   const sql = `
   UPDATE employees 
-  SET name=${name}, birthday=${birthday}, salary=${salary} 
-  WHERE id=${id}
+  SET name=$2, birthday=$3, salary=$4 
+  WHERE id=$1
+  RETURNING *
   `;
+
+  const { rows: employees } = await db.query(sql, [id, name, birthday, salary]);
+  return employees;
 }
 
 /**
@@ -52,6 +65,7 @@ export async function deleteEmployee(id) {
   // TODO
   const sql = `
   DELETE FROM employees
-  WHERE id=${id}
+  WHERE id=$1
   `;
+  const response = await db.query(sql, [id]);
 }
